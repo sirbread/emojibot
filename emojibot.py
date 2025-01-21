@@ -1,6 +1,21 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+'''
+todo:
+fix link issue (fetch image from link if link is used)
+fix gifs
+add more error msgs "invalid file type" or smth
+react with the same emoji to user
+add name next to emoji: "Emoji :coco: (coco) created successfully!"
+fix dashes not working in names
+'''
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -61,4 +76,4 @@ async def on_message(message):
         except Exception:
             await message.channel.send("An error occurred.")
 
-bot.run("gonna add dnv soon(tm)")
+bot.run(TOKEN)
