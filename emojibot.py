@@ -57,7 +57,7 @@ async def on_message(message):
         return
 
     content_parts = message.content.split()
-    if len(content_parts) < 2:
+    if len(content_parts) < 1:
         await message.channel.send("Please provide an emoji name and an image (attachment or URL).")
         return
 
@@ -70,35 +70,42 @@ async def on_message(message):
         await message.channel.send("Emoji name already exists!")
         return
 
-    image_url = content_parts[1]
     image_data = None
 
     if message.attachments:
         attachment = message.attachments[0]
-        image_data = await attachment.read()
-    elif image_url.startswith("http") and (
-        image_url.endswith(".png") or image_url.endswith(".jpg") or image_url.endswith(".jpeg") or image_url.endswith(".gif")
-    ):
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(image_url) as response:
-                    if response.status == 200:
-                        image_data = await response.read()
-                    else:
-                        await message.channel.send("Failed to fetch image from the URL. Please provide a valid image URL.")
-                        return
-            except Exception:
-                await message.channel.send("An error occurred while trying to fetch the image.")
-                return
-
-    if image_data:
         try:
-            emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
-            await message.channel.send(f"Emoji {emoji} (:{emoji.name}:) created successfully!")
-        except Exception as e:
-            await message.channel.send("An error occurred while creating the emoji.")
-    else:
+            image_data = await attachment.read()
+        except Exception:
+            await message.channel.send("An error occurred while reading the attached image.")
+            return
+
+    elif len(content_parts) > 1:
+        image_url = content_parts[1]
+        if image_url.startswith("http") and (
+            image_url.endswith(".png") or image_url.endswith(".jpg") or image_url.endswith(".jpeg") or image_url.endswith(".gif")
+        ):
+            async with aiohttp.ClientSession() as session:
+                try:
+                    async with session.get(image_url) as response:
+                        if response.status == 200:
+                            image_data = await response.read()
+                        else:
+                            await message.channel.send("Failed to fetch image from the URL. Please provide a valid image URL.")
+                            return
+                except Exception:
+                    await message.channel.send("An error occurred while trying to fetch the image.")
+                    return
+
+    if not image_data:
         await message.channel.send("No valid image found. Please provide an image attachment or a direct image URL.")
+        return
+
+    try:
+        emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
+        await message.channel.send(f"Emoji {emoji} (`:{emoji.name}:`) created successfully!")
+    except Exception:
+        await message.channel.send("An error occurred while creating the emoji.")
 
 
 bot.run(TOKEN)
