@@ -10,8 +10,6 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 '''
 todo:
-fix gifs
-add more error msgs "invalid file type" or smth
 react with the same emoji to user
 fix dashes not working in names
 '''
@@ -71,13 +69,10 @@ async def on_message(message):
         return
 
     image_data = None
-    is_animated = False
 
     if message.attachments:
         attachment = message.attachments[0]
         try:
-            if attachment.filename.endswith(".gif"):
-                is_animated = True
             image_data = await attachment.read()
         except Exception as e:
             await message.channel.send(f"An error occurred while reading the attached image: {e}")
@@ -88,8 +83,6 @@ async def on_message(message):
         if image_url.startswith("http") and (
             image_url.endswith(".png") or image_url.endswith(".jpg") or image_url.endswith(".jpeg") or image_url.endswith(".gif")
         ):
-            if image_url.endswith(".gif"):
-                is_animated = True
             async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get(image_url) as response:
@@ -111,7 +104,7 @@ async def on_message(message):
         return
 
     try:
-        emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data, animated=is_animated)
+        emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
         await message.channel.send(f"Emoji {emoji} (:{emoji.name}:) created successfully!")
     except discord.Forbidden:
         await message.channel.send("I don't have permission to manage emojis on this server.")
