@@ -10,8 +10,8 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 '''
 todo:
-react with the same emoji to user
 fix dashes not working in names
+add auto resizing
 '''
 
 intents = discord.Intents.default()
@@ -51,7 +51,10 @@ async def rebind(interaction: discord.Interaction, channel_id: int):
 
 @bot.event
 async def on_message(message):
-    if message.channel.id != binded_channel or message.author.bot:
+    if message.content.startswith("//") or message.author.bot:
+        return
+
+    if message.channel.id != binded_channel:
         return
 
     content_parts = message.content.split()
@@ -106,6 +109,7 @@ async def on_message(message):
     try:
         emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
         await message.channel.send(f"Emoji {emoji} (:{emoji.name}:) created successfully!")
+        await message.add_reaction(emoji)
     except discord.Forbidden:
         await message.channel.send("I don't have permission to manage emojis on this server.")
     except discord.HTTPException as e:
