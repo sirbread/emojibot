@@ -38,14 +38,18 @@ async def bind(interaction: discord.Interaction):
 @bot.tree.command(name="rebind", description="Rebind the bot to a different channel")
 @app_commands.describe(channel_id="ID of the new channel to bind the bot to")
 @app_commands.checks.has_permissions(administrator=True)
-async def rebind(interaction: discord.Interaction, channel_id: int):
+async def rebind(interaction: discord.Interaction, channel_id: str):
     global binded_channel
-    channel = bot.get_channel(channel_id)
-    if channel:
-        binded_channel = channel_id
-        await interaction.response.send_message(f"Bot successfully rebound to {channel.mention}")
-    else:
-        await interaction.response.send_message("Invalid channel ID", ephemeral=True)
+    try:
+        channel_id_int = int(channel_id)  
+        channel = bot.get_channel(channel_id_int)
+        if channel:
+            binded_channel = channel_id_int
+            await interaction.response.send_message(f"Bot successfully rebound to {channel.mention}")
+        else:
+            await interaction.response.send_message("Invalid channel ID. Make sure the channel exists and the bot can access it.", ephemeral=True)
+    except ValueError:
+        await interaction.response.send_message("Invalid channel ID format. You really fucked something up.", ephemeral=True)
 
 @bind.error
 async def bind_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
