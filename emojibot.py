@@ -57,7 +57,23 @@ async def on_message(message):
 
     if message.channel.id != binded_channel:
         return
-
+    
+    if message.content.lower().startswith("remove ") and len(message.content.split()) > 1:
+        emoji_name = message.content[7:].strip()
+        
+        emoji = discord.utils.get(message.guild.emojis, name=emoji_name)
+        if emoji:
+            try:
+                await emoji.delete()
+                await message.channel.send(f"Emoji {emoji_name} has been removed.")
+            except discord.Forbidden:
+                await message.channel.send("I don't have permission to delete emojis.")
+            except discord.HTTPException as e:
+                await message.channel.send(f"An error occurred while removing the emoji: {e}")
+        else:
+            await message.channel.send(f"Emoji name wasn't found. Try entering only the emoji name, not the actual emoji.")
+        return  
+    
     content_parts = message.content.split()
     if len(content_parts) < 1:
         await message.channel.send("Please provide an emoji name and an image (attachment or URL).")
@@ -118,6 +134,8 @@ async def on_message(message):
         await message.channel.send("I don't have permission to manage emojis on this server.")
     except discord.HTTPException as e:
         await message.channel.send(f"An error occurred while creating the emoji: {e}")
+
+    await bot.process_commands(message)
 
 async def resize_image(image_data):
     max_size_bytes = 256 * 1024
