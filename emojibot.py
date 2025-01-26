@@ -121,6 +121,7 @@ async def on_message(message):
         await message.channel.send(f"An error occurred while creating the emoji: {e}")
 
 async def resize_image(image_data):
+    max_size_bytes = 256 * 1024
     with Image.open(io.BytesIO(image_data)) as img:
         if img.format.lower() == "gif":
             frames = []
@@ -128,7 +129,7 @@ async def resize_image(image_data):
                 frame = frame.convert("RGBA")
                 frame.thumbnail((128, 128))
                 frames.append(frame)
-#
+
             output = io.BytesIO()
             frames[0].save(
                 output,
@@ -138,12 +139,35 @@ async def resize_image(image_data):
                 optimize=True,
                 loop=0,
             )
+
+            while output.tell() > max_size_bytes:
+                output = io.BytesIO()
+                for i in range(len(frames)):
+                    frames[i] = frames[i].resize(
+                        (int(frames[i].width * 0.9), int(frames[i].height * 0.9)), Image.Resampling.LANCZOS
+                    )
+                frames[0].save(
+                    output,
+                    format="GIF",
+                    save_all=True,
+                    append_images=frames[1:],
+                    optimize=True,
+                    loop=0,
+                )
             return output.getvalue()
+
         else:
             img = img.convert("RGBA")
             img.thumbnail((128, 128))
             output = io.BytesIO()
             img.save(output, format="PNG", optimize=True)
+
+            while output.tell() > max_size_bytes:
+                output = io.BytesIO()
+                img = img.resize(
+                    (int(img.width * 0.9), int(img.height * 0.9)), Image.Resampling.LANCZOS
+                )
+                img.save(output, format="PNG", optimize=True)
             return output.getvalue()
 
 bot.run(TOKEN)
