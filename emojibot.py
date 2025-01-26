@@ -10,11 +10,6 @@ import io
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-'''
-todo:
-tilde fix
-'''
-
 intents = discord.Intents.default()
 intents.messages = True
 intents.guilds = True
@@ -31,6 +26,7 @@ async def on_ready():
     print(f"Slash commands synced: {synced}")
 
 @bot.tree.command(name="bind", description="Bind the bot in the channel you're running this command")
+@app_commands.checks.has_permissions(administrator=True)
 async def bind(interaction: discord.Interaction):
     global binded_channel
     if binded_channel:
@@ -41,6 +37,7 @@ async def bind(interaction: discord.Interaction):
 
 @bot.tree.command(name="rebind", description="Rebind the bot to a different channel")
 @app_commands.describe(channel_id="ID of the new channel to bind the bot to")
+@app_commands.checks.has_permissions(administrator=True)
 async def rebind(interaction: discord.Interaction, channel_id: int):
     global binded_channel
     channel = bot.get_channel(channel_id)
@@ -49,6 +46,16 @@ async def rebind(interaction: discord.Interaction, channel_id: int):
         await interaction.response.send_message(f"Bot successfully rebound to {channel.mention}")
     else:
         await interaction.response.send_message("Invalid channel ID", ephemeral=True)
+
+@bind.error
+async def bind_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You must have admin perms to be able to run this.", ephemeral=True)
+
+@rebind.error
+async def rebind_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingPermissions):
+        await interaction.response.send_message("You must have admin perms to be able to run this.", ephemeral=True)
 
 @bot.event
 async def on_message(message):
