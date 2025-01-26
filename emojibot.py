@@ -12,8 +12,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 '''
 todo:
-fix dashes not working in names
-add auto resizing
+tilde fix
 '''
 
 intents = discord.Intents.default()
@@ -31,7 +30,7 @@ async def on_ready():
     synced = await bot.tree.sync()
     print(f"Slash commands synced: {synced}")
 
-@bot.tree.command(name="bind", description="Bind the bot to a specific channel")
+@bot.tree.command(name="bind", description="Bind the bot in the channel you're running this command")
 async def bind(interaction: discord.Interaction):
     global binded_channel
     if binded_channel:
@@ -65,8 +64,8 @@ async def on_message(message):
         return
 
     emoji_name = content_parts[0].strip()
-    if not emoji_name.isalnum():
-        await message.channel.send("Invalid characters in emoji name. Please use only letters and numbers.")
+    if not all(c.isalnum() or c == "_" for c in emoji_name):
+        await message.channel.send("Invalid characters in emoji name. Please use letters/numbers/underscores.")
         return
 
     if discord.utils.get(message.guild.emojis, name=emoji_name):
