@@ -65,7 +65,7 @@ async def on_message(message):
         if emoji:
             try:
                 await emoji.delete()
-                await message.channel.send(f"Emoji {emoji_name} has been removed.")
+                await message.channel.send(f"Emoji `:{emoji_name}:` has been removed.")
             except discord.Forbidden:
                 await message.channel.send("I don't have permission to delete emojis.")
             except discord.HTTPException as e:
@@ -73,7 +73,27 @@ async def on_message(message):
         else:
             await message.channel.send(f"Emoji name wasn't found. Try entering only the emoji name, not the actual emoji.")
         return  
-    
+
+    if message.content.lower().startswith("info ") and len(message.content.split()) > 1:
+        emoji_name = message.content[5:].strip()
+        
+        emoji = discord.utils.get(message.guild.emojis, name=emoji_name)
+        if emoji:
+            creation_date = emoji.created_at.strftime("%m/%d/%y")
+            author = emoji.author if hasattr(emoji, 'author') else "Unknown (can be emojibot)"
+            emoji_id = emoji.id
+
+            await message.channel.send(
+                f"Emoji Info for `:{emoji_name}:` \n"
+                f"ID: {emoji_id}\n"
+                f"Created on: {creation_date}\n"
+                f"Author: {author}"
+            )
+        else: #
+            await message.channel.send(f"Emoji name wasn't found. Try entering only the emoji name, not the actual emoji.")
+
+        return  
+
     content_parts = message.content.split()
     if len(content_parts) < 1:
         await message.channel.send("Please provide an emoji name and an image (attachment or URL).")
@@ -128,7 +148,7 @@ async def on_message(message):
 
     try:
         emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
-        await message.channel.send(f"Emoji {emoji} (:{emoji.name}:) created successfully!")
+        await message.channel.send(f"Emoji {emoji} (`:{emoji.name}:`) created successfully!")
         await message.add_reaction(emoji)
     except discord.Forbidden:
         await message.channel.send("I don't have permission to manage emojis on this server.")
@@ -137,6 +157,16 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+@bot.tree.command(name="help", description="halp!!1")
+async def help_command(interaction: discord.Interaction):
+    commands_list = [
+        "`/bind` - Bind the bot in the channel you're running this command",
+        "`/rebind [channel_id]` - Rebind the bot to a different channel.",
+        "`remove [emoji name, plaintext]` - Remove a custom emoji.",
+        "`info [emoji name, plaintext]` - Get info about a custom emoji.",
+    ]
+    await interaction.response.send_message("\n".join(commands_list))
+#
 async def resize_image(image_data):
     max_size_bytes = 256 * 1024
     with Image.open(io.BytesIO(image_data)) as img:
