@@ -4,6 +4,8 @@ from discord import app_commands
 from dotenv import load_dotenv
 import os
 import aiohttp
+from PIL import Image, ImageSequence
+import io
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -103,8 +105,11 @@ async def on_message(message):
         return
 
     if len(image_data) > 256 * 1024:
-        await message.channel.send("The image is too large. Emojis must be 256 KB or smaller.")
-        return
+        try:
+            image_data = await resize_image(image_data)
+        except Exception as e:
+            await message.channel.send(f"An error occurred while resizing the image: {e}")
+            return
 
     try:
         emoji = await message.guild.create_custom_emoji(name=emoji_name, image=image_data)
@@ -115,5 +120,30 @@ async def on_message(message):
     except discord.HTTPException as e:
         await message.channel.send(f"An error occurred while creating the emoji: {e}")
 
+async def resize_image(image_data):
+    with Image.open(io.BytesIO(image_data)) as img:
+        if img.format.lower() == "gif":
+            frames = []
+            for frame in ImageSequence.Iterator(img):
+                frame = frame.convert("RGBA")
+                frame.thumbnail((128, 128))
+                frames.append(frame)
+#
+            output = io.BytesIO()
+            frames[0].save(
+                output,
+                format="GIF",
+                save_all=True,
+                append_images=frames[1:],
+                optimize=True,
+                loop=0,
+            )
+            return output.getvalue()
+        else:
+            img = img.convert("RGBA")
+            img.thumbnail((128, 128))
+            output = io.BytesIO()
+            img.save(output, format="PNG", optimize=True)
+            return output.getvalue()
 
 bot.run(TOKEN)
