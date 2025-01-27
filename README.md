@@ -1,5 +1,6 @@
 # emojibot
-a fun custom emoji manager for discord. add, remove, and react with custom/animated emojis the faster (and no nitro) way :D
+a fun custom emoji manager for discord. add, remove, and react with custom/animated emojis the faster (and no nitro) way :D <br>
+**not intended for bigger servers. that can be _very_ problematic.**
 
 ## features
 - emoji managment:
@@ -7,7 +8,7 @@ a fun custom emoji manager for discord. add, remove, and react with custom/anima
   - remove emojis using their names. 
   - fetch info about emojis (e.g., creation date, ID, author).<br>
 <br>
-- kinda discord nitro reactions:
+- kinda nitro reactions:
   - react to specific messages or the most recent message above with a custom emoji.
   - includes support for animated emojis. (yep, you can react with animated gifs without nitro!)<br>
 <br>
@@ -17,8 +18,8 @@ a fun custom emoji manager for discord. add, remove, and react with custom/anima
 <br>
 - error handling: there's descriptive error messages for invalid commands or permissions issues.
 
-## Commands
-### Slash Commands
+## commands
+### slash commands
 - `/bind`  
   [admin] binds the bot to the channel where this command is run. 
 
@@ -37,7 +38,7 @@ a fun custom emoji manager for discord. add, remove, and react with custom/anima
 ### text commands (in bound channel)
 
 - `emoji_name [attachment_or_url]`  
-  Adds a custom emoji using the provided name and image (via attachment or direct URL).
+  adds a custom emoji using the provided name and image (via attachment or direct URL).
 
 - `remove [emoji_name]`  
   removes a custom emoji by name.
@@ -46,5 +47,5 @@ a fun custom emoji manager for discord. add, remove, and react with custom/anima
   retrieves details about a custom emoji, such as creation date, author, and ID.
 
 ## acknowledgements
-inspiration from @hackclub's emojibot. all credit for the idea goes to the creator of emojibot in the slack.
+inspiration from @hackclub's emojibot. all credit for the idea goes to the author of emojibot, B Smith, in the slack.
  
