@@ -26,8 +26,6 @@ async def on_ready():
     synced = await bot.tree.sync()
     print(f"Slash commands synced: {synced}")
 
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 @bot.tree.command(name="bind", description="Bind the bot in the channel you're running this command")
 @app_commands.checks.has_permissions(administrator=True)
 async def bind(interaction: discord.Interaction):
@@ -63,8 +61,6 @@ async def bind_error(interaction: discord.Interaction, error: app_commands.AppCo
 async def rebind_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
     if isinstance(error, app_commands.MissingPermissions):
         await interaction.response.send_message("You must have admin perms to be able to run this.", ephemeral=True)
-
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @bot.event
 async def on_message(message):
@@ -105,7 +101,7 @@ async def on_message(message):
                 f"Created on: {creation_date}\n"
                 f"Author: {author}"
             )
-        else: #
+        else: 
             await message.channel.send(f"Emoji name wasn't found. Try entering only the emoji name, not the actual emoji.")
 
         return  
@@ -173,8 +169,6 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 @bot.tree.command(name="help", description="halp!!1")
 async def help_command(interaction: discord.Interaction):
     commands_list = [
@@ -182,12 +176,12 @@ async def help_command(interaction: discord.Interaction):
         "`/rebind [channel_id]` - Rebind the bot to a different channel.",
         "`remove [emoji name, plaintext]` - Remove a custom emoji.",
         "`info [emoji name, plaintext]` - Get info about a custom emoji.",
+        "`/react [message ID] [emoji name, plaintext]` - React to a specific message with a custom emoji. (Includes animated emojis!)"
+        "`/reactabove [emoji name, plaintext]` - React to the message above with a custom emoji. (Includes animated emojis!)"
     ]
     await interaction.response.send_message("\n".join(commands_list))
-#  
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-@bot.tree.command(name="reactabove", description="React to the message above with an emoji.")
+@bot.tree.command(name="reactabove", description="React to the message above with a custom emoji. (Includes animated emojis!)")
 @app_commands.describe(emoji_name="Name of the emoji to react with")
 async def reactabove(interaction: discord.Interaction, emoji_name: str):
     if not interaction.channel:
@@ -228,9 +222,7 @@ async def reactabove(interaction: discord.Interaction, emoji_name: str):
     except Exception as e:
         await interaction.response.send_message(f"An error occurred: {e}", ephemeral=True)
 
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-@bot.tree.command(name="react", description="React to a specific message by ID with a specified emoji")
+@bot.tree.command(name="react", description="React to a specific message with a custom emoji. (Includes animated emojis!)")
 @app_commands.describe(message_id="ID of the message to react to", emoji_name="Name of the emoji to react with")
 async def react(interaction: discord.Interaction, message_id: str, emoji_name: str):
     await interaction.response.defer(ephemeral=True)
@@ -269,8 +261,6 @@ async def react(interaction: discord.Interaction, message_id: str, emoji_name: s
         await interaction.followup.send("Message not found. Make sure the ID is correct, and you run this in the same channel as the message.", ephemeral=True)
     except discord.Forbidden:
         await interaction.followup.send("I don't have permission to access that message.", ephemeral=True)
-
-#  ~~ this is a spacer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 async def resize_image(image_data):
     max_size_bytes = 256 * 1024
