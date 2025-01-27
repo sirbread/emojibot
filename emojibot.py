@@ -176,7 +176,7 @@ async def help_command(interaction: discord.Interaction):
         "`/rebind [channel_id]` - Rebind the bot to a different channel.",
         "`remove [emoji name, plaintext]` - Remove a custom emoji.",
         "`info [emoji name, plaintext]` - Get info about a custom emoji.",
-        "`/react [message ID] [emoji name, plaintext]` - React to a specific message with a custom emoji. (Includes animated emojis!)"
+        "`/react [message ID] [emoji name, plaintext]` - React to a specific message with a custom emoji. (Includes animated emojis!)",
         "`/reactabove [emoji name, plaintext]` - React to the message above with a custom emoji. (Includes animated emojis!)"
     ]
     await interaction.response.send_message("\n".join(commands_list))
