@@ -219,11 +219,9 @@ async def reactabove(interaction: discord.Interaction, emoji_name: str):
 
         try:
             await bot.wait_for("reaction_add", timeout=10, check=check)
-        except TimeoutError:
-            pass
-
-        try:
             await message_above.remove_reaction(emoji, bot.user)
+        except asyncio.TimeoutError:
+            pass
         except discord.HTTPException:
             pass
 
@@ -258,10 +256,11 @@ async def react(interaction: discord.Interaction, message_id: str, emoji_name: s
 
             try:
                 await bot.wait_for("reaction_add", check=check, timeout=10)
+                await target_message.remove_reaction(emoji, bot.user)
             except asyncio.TimeoutError:
                 pass
-            finally:
-                await target_message.remove_reaction(emoji, bot.user)
+            except discord.HTTPException:
+                pass
         else:
             await interaction.followup.send(f"Emoji `:{emoji_name}:` not found. Only custom emojis from this server work.", ephemeral=True)
     except ValueError:
