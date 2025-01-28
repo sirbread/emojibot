@@ -3,7 +3,7 @@ a fun custom emoji manager for discord. add, remove, and react with custom/anima
 **not intended for bigger servers. that can be _very_ problematic.**
 
 ## add the official bot to your server!
-use (this)[https://discord.com/oauth2/authorize?client_id=1333281378321694812] link. it may _sometimes_ be down, since it's hosted on @hackclub's nest server.
+use [this](https://discord.com/oauth2/authorize?client_id=1333281378321694812) link. it may _sometimes_ be down, since it's hosted on @hackclub's nest server.
 
 ## features
 - emoji managment:
